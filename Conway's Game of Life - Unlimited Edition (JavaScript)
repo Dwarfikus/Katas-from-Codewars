@@ -1,9 +1,12 @@
-function getGeneration(cells, generations){
+//this code make n-generation 2D matrix, where 1-living cell, 0-dead cell
+function getGeneration(cells, generations){ //cells type: cells[ [1, 0, 0], [0, 1, 1], [1, 1, 1] ]
   for(let i=0; i<generations; i++) {
     let nj=cells.length, nk=cells[0].length;
     let newCells=Array.from(Array(nj+2), () => new Array(nk+2));
+    //go round matrix
     for(let j=0; j<nj+2; j++) {
       for(let k=0; k<nk+2; k++) {
+        //check 8 cells around
         let count=0, num=0;
         for(let g=j-1; g<j+2; g++) {
           for(let h=k-1; h<k+2; h++) {
@@ -12,11 +15,13 @@ function getGeneration(cells, generations){
             if( g==j && h==k ) num=cells[g-1][h-1];
           }
         }
+        //set cell condition
         if( (count==3 && num==0) || 
             ((count==3 || count==4) && num==1) ) newCells[j][k]=1;
         else newCells[j][k]=0;
       }
     }
+    //extend the matrix
     let flag=0, wl=nj+2, wr=0, ht=nk+2, hb=0;
     for(let j=0; j<nj+2; j++) {
       for(let k=0; k<nk+2; k++) {
@@ -30,6 +35,7 @@ function getGeneration(cells, generations){
       }
     }
     if( !flag ) return [[]];
+    //change previous generation
     cells=Array.from(Array(hb-ht+1), () => new Array(wr-wl+1));
     let cellsi=0, cellsj=0;
     for(let j=ht; j<=hb; j++) {
