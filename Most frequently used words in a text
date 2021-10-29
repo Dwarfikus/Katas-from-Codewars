@@ -1,0 +1,50 @@
+function topThreeWords(text) { //find three the most frequently used words in a text
+  let words = new Map(); //map-array for counting and comparing frequency
+  let res = []; //resulting array
+  let word = ""; //current founded word
+  text=text.toLowerCase();
+  while( text.length!=0 ) {
+    let notSymbol = text.match(/\W/);
+    if( notSymbol==text[0] && notSymbol!="\'" ) { //find the beginning of the word
+      text=text.slice(1);
+      continue;
+    }
+    while( true ) { //construct the word(find end)
+      let symbol = text.match(/\W/);
+      if( symbol==null ) break;
+      if( symbol=="\'" ) {
+        word+=text.slice(0, symbol.index+1);
+        text=text.slice(symbol.index+1);
+      }
+      else {
+        word+=text.slice(0, symbol.index);
+        text=text.slice(symbol.index+1);
+        break;
+      }
+    }
+    if( notSymbol==null ) { //remember last word
+      word+=text.slice(0);
+      text="";
+    }
+    if( word.match(/\w/)==null ) { //if word is just "'" - continue
+      word="";
+      continue;
+    } else { //else add or count the word in map
+      if( words.has(word) ) words.set(word, words.get(word)+1);
+      else words.set(word, 1);
+      word="";
+    }
+  }
+  for(let i=0; i<3; i++) { //find three words
+    let max=0;
+    for(let a of words.entries()) {
+      if( a[1]>max ) {
+        max=a[1];
+        word=a[0];
+      }
+    }
+    if( max!=0 ) res.push(word);
+    words.delete(word);
+  }
+  return res;
+}
