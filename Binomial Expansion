@@ -1,0 +1,44 @@
+function expand(expr) { //expand (ax+b)^n without ()
+  console.log(expr);
+  let a, b, n, x;
+  n = +expr.slice(expr.match(/\^/).index+1);
+  if( n==0 ) return "1"; //(ax+b)^0 == 1
+  x = expr[expr.match(/[a-z]/).index];
+  a = +expr.slice(expr.match(/[1-9]/).index, expr.match(/[a-z]/).index);
+  if( expr[1]=='-' && expr.match(/[1-9]/).index==2 ) a *= -1;
+  else if( expr[1]=='-' && !(expr.match(/[1-9]/).index==2) ) a = -1;
+  else if( expr.match(/[a-z]/).index==1 ) a = 1;
+  b = +expr.slice(expr.match(/[a-z]/).index+1, expr.match(/[)]/).index);
+  if( b==0 ) b = 0;
+  let triangle = [1];
+  for(let i=0; i<n; i++) { //make an array with coefficients as in the Pascal's triangle equal power
+    let newTriangle = [];
+    newTriangle.push(1);
+    if( triangle.length>=2 ) {
+      let len=triangle.length;
+      for(let j=0; j<len-1; j++) {
+        let newLen = newTriangle.length;
+        newTriangle.push(triangle[newLen-1]+triangle[newLen]);
+      }
+    }
+    triangle = newTriangle;
+    triangle.push(1);
+  }
+  let res = "", countX = n, countB = 0;
+  for(let i=0; i<n+1; i++) { //constructing string except all the unnecessary symbols
+    let preRes = "";
+    let coefficient = triangle[i]*Math.pow(a, countX)*Math.pow(b, countB);
+    if( coefficient==0 ) continue;
+    if( coefficient==1 ) preRes += `+${x}^${countX}`;
+    else if( coefficient==-1 ) preRes += `-${x}^${countX}`;
+    else if( coefficient>0 ) preRes += `+${coefficient+x}^${countX}`;
+    else preRes += `${coefficient+x}^${countX}`;
+    if( countX==1 ) preRes = preRes.slice(0, preRes.match(/\^/).index);
+    else if( countX==0 ) preRes = preRes.slice(0, preRes.indexOf(x));
+    if( (preRes=='-'|| preRes=='+') && countX==0 ) preRes += "1";
+    res += ( !res.length && preRes[0]!='-' ) ? preRes.slice(1) : preRes; 
+    countX--;
+    countB++;
+  }
+  return res;
+}
